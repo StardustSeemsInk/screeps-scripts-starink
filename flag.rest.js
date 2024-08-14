@@ -17,7 +17,7 @@ var flagRest = {
                 // 检查creep是否处于休息状态
                 if(restCreeps[i].memory.resting){
                     // 更换creep的角色
-                    if(upgraders.length < 2){
+                    if(upgraders.length < 3){
                         restCreeps[i].memory.role = 'upgrader';
                         restCreeps[i].say('🔄 upgrader');
                     }
@@ -27,8 +27,10 @@ var flagRest = {
                                 restCreeps[i].memory.role = 'worker';
                                 restCreeps[i].say('🔄 worker');
                             }
-                            restCreeps[i].memory.role = 'builder';
-                            restCreeps[i].say('🔄 builder');
+                            else{
+                                restCreeps[i].memory.role = 'builder';
+                                restCreeps[i].say('🔄 builder');
+                            }
                         }
                         else if(restCreeps[i].memory.role == 'builder'){
                             restCreeps[i].memory.role = 'harvester';
@@ -42,6 +44,17 @@ var flagRest = {
 
 
                 }
+            }
+        }
+
+        var closestCreep = flag.pos.findClosestByRange(FIND_MY_CREEPS, {
+            filter: (creep) => {
+                return (creep.memory.role == 'worker');
+            }
+        });
+        if(workers.length > 5){
+            if(closestCreep){
+                closestCreep.memory.role = 'builder';
             }
         }
     }

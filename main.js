@@ -4,6 +4,8 @@ var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
 var roleWorker = require('role.worker');
 
+var roleSoldier = require('role.soldier');
+
 var flagRest = require('flag.rest');
 
 module.exports.loop = function () {
@@ -25,6 +27,7 @@ module.exports.loop = function () {
     var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
     var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
     var workers = _.filter(Game.creeps, (creep) => creep.memory.role == 'worker');
+    var soldiers = _.filter(Game.creeps, (creep) => creep.memory.role == 'soldier');
 
     var role2spawn = 'harvester'; // 默认生成harvester
     if(harvesters.length < 2) { // 保证至少2个
@@ -63,6 +66,14 @@ module.exports.loop = function () {
         console.log('Spawning new large worker: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK,WORK,WORK,CARRY,CARRY,MOVE,MOVE], newName, 
             {memory: {role: role2spawn, type: 'LW'}});  // 指定role属性
+    }
+
+    // mid soldiers
+    if(workers.length >= 5 && soldiers.length < 2) {
+        var newName = 'MS' + Game.time;
+        console.log('Spawning new medium soldier: ' + newName);
+        Game.spawns['Spawn1'].spawnCreep([TOUGH,ATTACK,ATTACK,MOVE,MOVE,MOVE], newName, 
+            {memory: {role: 'soldier', type: 'MS'}});  // 指定role属性
     }
 
     //console.log('Harvesters: ' + harvesters.length);
@@ -116,6 +127,9 @@ module.exports.loop = function () {
         }
         if(creep.memory.role == 'worker') {
             roleWorker.run(creep);
+        }
+        if(creep.memory.role == 'soldier') {
+            roleSoldier.run(creep);
         }
     }
 
