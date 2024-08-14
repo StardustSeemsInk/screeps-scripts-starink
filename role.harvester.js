@@ -24,10 +24,12 @@ var roleHarvester = {
             });
             if(targets.length > 0) { // 需要维护的建筑数目 > 0
                 if(creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.memory.resting = false;
                     creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
                 }
             }
             else{
+                creep.memory.resting = true;
                 creep.moveTo(restPoints[0], {visualizePathStyle: {stroke: '#ffffff'}});
             }
         }

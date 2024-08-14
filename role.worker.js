@@ -22,15 +22,21 @@ var roleWorker = {
                 }
             });
             if(closestDamagedStructure) {
+                creep.memory.resting = false;
                 creep.moveTo(closestDamagedStructure, {visualizePathStyle: {stroke: '#ffffff'}});
                 creep.repair(closestDamagedStructure);
             }
 			else{
+                creep.memory.resting = true;
 				creep.moveTo(restPoints[0], {visualizePathStyle: {stroke: '#ffffff'}});
 			}
 	    }
 	    else {  // 非building状态的时候， 到最近的source旁边并采集
-	        var closestSource = creep.pos.findClosestByRange(FIND_SOURCES);
+	        var closestSource = creep.pos.findClosestByRange(FIND_SOURCES, {
+                filter: (source) => {
+                    return source.energy > 0;
+                }
+            });
             if(creep.harvest(closestSource) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(closestSource, {visualizePathStyle: {stroke: '#ffaa00'}});
             }
