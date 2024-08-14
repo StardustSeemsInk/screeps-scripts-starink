@@ -14,6 +14,7 @@ var roleUpgrader = {
 
 	    if(creep.memory.upgrading) { // 升级状态，找到控制器并升级 + 可视化
             if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+                creep.memory.resting = false;
                 creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#ffffff'}});
             }
         }

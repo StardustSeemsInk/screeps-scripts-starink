@@ -5,6 +5,8 @@ var roleBuilder = require('role.builder');
 var roleWorker = require('role.worker');
 
 var roleSoldier = require('role.soldier');
+var roleClaimer = require('role.claimer');
+var roleHealer = require('role.healer');
 
 var flagRest = require('flag.rest');
 
@@ -27,7 +29,10 @@ module.exports.loop = function () {
     var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
     var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
     var workers = _.filter(Game.creeps, (creep) => creep.memory.role == 'worker');
+    
     var soldiers = _.filter(Game.creeps, (creep) => creep.memory.role == 'soldier');
+    var claimers = _.filter(Game.creeps, (creep) => creep.memory.role == 'claimer');
+    var healers = _.filter(Game.creeps, (creep) => creep.memory.role == 'healer');
 
     var role2spawn = 'harvester'; // 默认生成harvester
     if(harvesters.length < 2) { // 保证至少2个
@@ -53,7 +58,7 @@ module.exports.loop = function () {
     }
 
     // mid workers
-    if(controller_level >= 2 && mediumWorkers.length < 6) {
+    if(controller_level >= 2 && mediumWorkers.length < 7) {
         var newName = 'MW' + Game.time;
         console.log('Spawning new medium worker: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK,WORK,CARRY,CARRY,MOVE,MOVE], newName, 
@@ -61,7 +66,7 @@ module.exports.loop = function () {
     }
 
     // large workers
-    if(largeWorkers.length < 2) {
+    if(largeWorkers.length < 3) {
         var newName = 'LW' + Game.time;
         console.log('Spawning new large worker: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK,WORK,WORK,CARRY,CARRY,MOVE,MOVE], newName, 
@@ -69,15 +74,45 @@ module.exports.loop = function () {
     }
 
     // mid soldiers
-    if(workers.length >= 5 && soldiers.length < 2) {
+    if(workers.length >= 5 && soldiers.length < 1) {
         var newName = 'MS' + Game.time;
         console.log('Spawning new medium soldier: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([TOUGH,ATTACK,ATTACK,MOVE,MOVE,MOVE], newName, 
             {memory: {role: 'soldier', type: 'MS'}});  // 指定role属性
     }
 
+    // claimers
+    if(workers.length >= 5 && soldiers.length >= 2 && claimers.length < 1) {
+        var newName = 'C' + Game.time;
+        console.log('Spawning new claimer: ' + newName);
+        Game.spawns['Spawn1'].spawnCreep([CLAIM,MOVE], newName, 
+            {memory: {role: 'claimer', type: 'C'}});  // 指定role属性
+    }
+
+    // healers
+    if(workers.length >= 5 && soldiers.length >= 1 && healers.length < 1) {
+        var newName = 'H' + Game.time;
+        console.log('Spawning new healer: ' + newName);
+        Game.spawns['Spawn1'].spawnCreep([HEAL,MOVE], newName, 
+            {memory: {role: 'healer', type: 'H'}});  // 指定role属性
+    }
+
     //console.log('Harvesters: ' + harvesters.length);
     //console.log('controller:' + Game.spawns['Spawn1'].room.controller.level)
+
+    // 如果spawn没有在孵化，能量大于100
+    if(!Game.spawns['Spawn1'].spawning && Game.spawns['Spawn1'].store.getUsedCapacity(RESOURCE_ENERGY) > 100) {
+
+        var dyingCreeps = Game.spawns['Spawn1'].pos.findInRange(FIND_MY_CREEPS, 3, {
+            filter: (creep) => {
+                return (creep.memory.role == 'soldier' || creep.memory.role == 'claimer' || creep.memory.role == 'healer');
+            }
+        });
+        if(dyingCreeps.length > 0){
+            var spawn = Game.spawns['Spawn1'];
+            spawn.renewCreep(dyingCreeps[0]);
+        }
+    }
 
     if(Game.spawns['Spawn1'].spawning) { // 孵化过程可视化
         var spawningCreep = Game.creeps[Game.spawns['Spawn1'].spawning.name];
@@ -130,6 +165,12 @@ module.exports.loop = function () {
         }
         if(creep.memory.role == 'soldier') {
             roleSoldier.run(creep);
+        }
+        if(creep.memory.role == 'claimer') {
+            roleClaimer.run(creep);
+        }
+        if(creep.memory.role == 'healer') {
+            roleHealer.run(creep);
         }
     }
 

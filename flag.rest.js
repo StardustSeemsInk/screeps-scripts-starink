@@ -17,7 +17,7 @@ var flagRest = {
                 // 检查creep是否处于休息状态
                 if(restCreeps[i].memory.resting){
                     // 更换creep的角色
-                    if(upgraders.length < 3){
+                    if(upgraders.length < 5){
                         restCreeps[i].memory.role = 'upgrader';
                         restCreeps[i].say('🔄 upgrader');
                     }
