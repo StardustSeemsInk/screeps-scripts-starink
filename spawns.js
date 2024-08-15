@@ -1,3 +1,6 @@
+const configuration = require('configuration');
+const config = new configuration.Config();
+
 var spawns = {
 
     run: function() {
@@ -13,17 +16,25 @@ var spawns = {
             var spawn = Game.spawns[name];
 
             //#region 续命
-            // 如果spawn没有在孵化，能量大于100, 且周围有需要续命的creep
+            // 如果spawn没有在孵化，能量大于100, 且周围有需要续命的creep, 且配置文件中允许续命
             if(!spawn.spawning && spawn.store.getUsedCapacity(RESOURCE_ENERGY) > 100) {
 
-                var dyingCreeps = spawn.pos.findInRange(FIND_MY_CREEPS, 3, {
-                    filter: (creep) => {
-                        return (creep.memory.role == 'soldier' || creep.memory.role == 'claimer' || creep.memory.role == 'healer');
-                    }
-                });
+                var dyingCreeps = spawn.pos.findInRange(FIND_MY_CREEPS, 2);
                 if(dyingCreeps.length > 0){
-                    var spawn = spawn;
-                    spawn.renewCreep(dyingCreeps[0]);
+                    if(config.ifRenew){
+                        for(creep in dyingCreeps){
+                            if(dyingCreeps[creep].ticksToLive < 800){
+                                spawn.renewCreep(dyingCreeps[creep]);
+                            }
+                        }
+                    }
+                    else{
+                        for(creep in dyingCreeps){
+                            if(dyingCreeps[creep].ticksToLive < 50){
+                                spawn.recycleCreep(dyingCreeps[creep]);
+                            }
+                        }
+                    }
                 }
             }
             //#endregion

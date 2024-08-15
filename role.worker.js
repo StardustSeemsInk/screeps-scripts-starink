@@ -1,3 +1,8 @@
+const configuration = require('configuration');
+const config = new configuration.Config();
+
+const workersBasic = require('workers.basic');
+
 var roleWorker = {
 
     /** @param {Creep} creep **/
@@ -32,14 +37,7 @@ var roleWorker = {
 			}
 	    }
 	    else {  // 非building状态的时候， 到最近的source旁边并采集
-	        var closestSource = creep.pos.findClosestByRange(FIND_SOURCES, {
-                filter: (source) => {
-                    return source.energy > 0;
-                }
-            });
-            if(creep.harvest(closestSource) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(closestSource, {visualizePathStyle: {stroke: '#ffaa00'}});
-            }
+	        workersBasic.workerMine(creep);
 	    }
 	}
 };

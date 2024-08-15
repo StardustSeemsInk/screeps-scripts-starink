@@ -1,3 +1,8 @@
+const configuration = require('configuration');
+const config = new configuration.Config();
+
+const workersBasic = require('workers.basic');
+
 var roleUpgrader = {
 
     /** @param {Creep} creep **/
@@ -19,10 +24,7 @@ var roleUpgrader = {
             }
         }
         else {  // 采集状态 + 可视化
-	        var closestSource = creep.pos.findClosestByRange(FIND_SOURCES);
-            if(creep.harvest(closestSource) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(closestSource, {visualizePathStyle: {stroke: '#ffaa00'}});
-            }
+            workersBasic.workerMine(creep);
         }
 	}
 };

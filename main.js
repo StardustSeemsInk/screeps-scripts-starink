@@ -4,6 +4,9 @@ const flags = require('flags');
 const spawns = require('spawns');
 const towers = require('towers');
 
+// init
+basic.init();
+// main loop
 module.exports.loop = function () {
 
     basic.run();

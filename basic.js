@@ -1,8 +1,20 @@
 const configuration = require('configuration');
 const config = new configuration.Config();
 
+const sources = require('sources');
 
 var basic = {
+
+    init: function() {
+        // console.log('basic.js');
+        // 初始化房间内的资源
+        for(var name in Game.rooms) {
+            var room = Game.rooms[name];
+            sources.init(room);
+        }
+    },
+
+
     run: function() {
         // console.log('basic.js');
 
@@ -24,6 +36,7 @@ var basic = {
             var mediumworker = _.filter(Game.creeps, (creep) => creep.memory.type == 'MW');
             var largeworker = _.filter(Game.creeps, (creep) => creep.memory.type == 'LW');
             var soldier = _.filter(Game.creeps, (creep) => creep.memory.type == 'MS');
+            var shooter = _.filter(Game.creeps, (creep) => creep.memory.type == 'MSH');
             var claimer = _.filter(Game.creeps, (creep) => creep.memory.type == 'C');
             var healer = _.filter(Game.creeps, (creep) => creep.memory.type == 'H');
 
@@ -32,6 +45,7 @@ var basic = {
                 'MW': mediumworker.length,
                 'LW': largeworker.length,
                 'MS': soldier.length,
+                'MSH': shooter.length,
                 'C': claimer.length,
                 'H': healer.length,
             };
@@ -42,6 +56,9 @@ var basic = {
                 switch(type) {
                     case 'MS':
                         role = 'soldier';
+                        break;
+                    case 'MSH':
+                        role = 'shooter';
                         break;
                     case 'C':
                         role = 'claimer';
